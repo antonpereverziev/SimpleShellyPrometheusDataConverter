@@ -3,7 +3,6 @@ package org.home.automation;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
-import jdk.nashorn.internal.parser.JSONParser;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -13,7 +12,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 
 public class ShellyToPrometheusConverterServer {
     public static void main(String ... args) throws IOException {
-        ThreadPoolExecutor threadPoolExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(10);
+        ThreadPoolExecutor threadPoolExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(2);
 
         HttpServer server = HttpServer.create(new InetSocketAddress("0.0.0.0", 8001), 0);
         server.createContext("/metrics", new  MyHttpHandler());
@@ -53,7 +52,7 @@ class MyHttpHandler implements HttpHandler {
         .append("true".equals(json.substring(indexOfIsOn+6, indexOfIsOn + 10)) ? "1" : "0");
 
         // encode HTML content
-        String htmlResponse = htmlBuilder.toString();//StringEscapeUtils.escapeHtml4(htmlBuilder.toString());
+        String htmlResponse = htmlBuilder.toString();
         // this line is a must
         httpExchange.sendResponseHeaders(200, htmlResponse.length());
         outputStream.write(htmlResponse.getBytes());
